@@ -14,8 +14,9 @@ class AdministracionController extends Controller
     }
 
 
-    public function moduloAdministracion()
+    public function moduloAdministracion(Request $request)
     {
+       $request->user()->authorizeRoles(['admin']);
        return view('mantenimiento/index');
     }
 }

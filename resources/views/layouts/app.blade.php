@@ -25,7 +25,11 @@
     <script type="text/javascript" src="{{ asset('js/librerias/bootstrap.bundle.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/librerias/jquery-ui.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/librerias/jquery.validate.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/librerias/datatables.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/librerias/toastr.min.js') }}"></script>
+
+
+
 
 </head>
 <body>

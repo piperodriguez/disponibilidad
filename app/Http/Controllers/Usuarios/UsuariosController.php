@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Usuarios;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Redirect,Response;
 use Illuminate\Support\Facades\DB;
 use App\Modelos\Usuarios;
 
@@ -36,19 +37,9 @@ class UsuariosController extends Controller
 
     public function index()
     {
-        $datos['usuarios'] = $this->_model->all();
-
+        //$datos['usuarios'] = $this->_model->all();
+        $datos['usuarios'] = Usuarios::orderBy('id','desc')->paginate(8);
         return view('usuarios/index', compact('datos'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -59,7 +50,14 @@ class UsuariosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $userId = $request->user_id;
+        $user   =   Usuarios::updateOrCreate(['id' => $userId],
+                        [
+                            'username' => $request->username,
+                            'email' => $request->email
+                        ]
+                    );
+        return Response::json($user);
     }
 
     /**
@@ -81,7 +79,10 @@ class UsuariosController extends Controller
      */
     public function edit($id)
     {
-        //
+        $where = array('id' => $id);
+        $user  = Usuarios::where($where)->first();
+
+        return Response::json($user);
     }
 
     /**
@@ -104,6 +105,7 @@ class UsuariosController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = Usuarios::where('id',$id)->delete();
+        return Response::json($user);
     }
 }

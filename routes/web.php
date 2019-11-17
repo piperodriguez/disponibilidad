@@ -15,6 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+<<<<<<< HEAD
 Auth::routes();
 
 Route::resource('usuarios', 'Usuarios\UsuariosController');
@@ -22,3 +23,7 @@ Route::resource('usuarios', 'Usuarios\UsuariosController');
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/mantenimiento', 'Mantenimiento\AdministracionController@moduloAdministracion')->name('administracion');
+=======
+Route::resource('/tipo_establecimiento', 'testablecimientoController');
+Route::resource('/pais', 'paisController');
+>>>>>>> KaiserDeveloper

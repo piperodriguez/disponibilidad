@@ -29,7 +29,12 @@
     <script type="text/javascript" src="{{ asset('js/librerias/toastr.min.js') }}"></script>
 
 
-
+    <link href="https://fonts.googleapis.com/css?family=Hind+Siliguri&display=swap" rel="stylesheet">
+    <style type="text/css">
+        body {
+            font-family: 'Hind Siliguri', sans-serif !important;
+        }
+    </style>
 
 </head>
 <body>

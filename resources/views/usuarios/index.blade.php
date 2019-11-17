@@ -1,24 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<html>
-<head>
-    <title>Laravel 6 Ajax CRUD tutorial using Datatable - ItSolutionStuff.com</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" />
-    <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
-</head>
-<body>
-
 <div class="container">
-    <h1>Laravel 6 Ajax CRUD tutorial using Datatable - ItSolutionStuff.com</h1>
-    <a class="btn btn-success" href="javascript:void(0)" id="createNewProduct"> Create New Product</a>
+    <h1 align="center">Lista de Usuarios <i class="fas fa-users"></i></h1>
+    <a class="btn btn-dark" href="javascript:void(0)" id="createNewProduct"> <i class="fas fa-user-plus"></i></a>
     <table class="table table-bordered data-table">
         <thead>
             <tr>
@@ -122,6 +107,7 @@
 
               $('#productForm').trigger("reset");
               $('#ajaxModel').modal('hide');
+              toastr["success"]("Proceso completado ...", "Usuari !");
               table.draw();
 
           },
@@ -141,6 +127,7 @@
             type: "DELETE",
             url: "{{ route('usuarios.store') }}"+'/'+product_id,
             success: function (data) {
+                toastr["error"]("Proceso completado ...", "Usuario Eliminado Correctamente !");
                 table.draw();
             },
             error: function (data) {
@@ -150,9 +137,5 @@
     });
 
   });
-
-
-
 </script>
-</html>
 @endsection

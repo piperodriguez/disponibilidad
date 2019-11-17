@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::resource('/tipo_establecimiento', 'testablecimientoController');
+Route::resource('/pais', 'paisController');

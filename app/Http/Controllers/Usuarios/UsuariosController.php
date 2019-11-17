@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Usuarios;
 
+use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Redirect,Response;
-use Illuminate\Support\Facades\DB;
-use App\Modelos\Usuarios;
+use DataTables;
 
 
     /**
@@ -32,14 +31,32 @@ class UsuariosController extends Controller
     function __construct()
     {
         $this->middleware('auth');
-        $this->_model = new Usuarios();
+        $this->_model = new User();
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        //$datos['usuarios'] = $this->_model->all();
-        $datos['usuarios'] = Usuarios::orderBy('id','desc')->paginate(8);
-        return view('usuarios/index', compact('datos'));
+
+        if ($request->ajax()) {
+
+            $data = User::latest()->get();
+
+            return Datatables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('action', function($row){
+
+                           $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editUsuario">Edit</a>';
+
+                           $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteProduct">Delete</a>';
+
+                            return $btn;
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+        }
+        $users = ['username' => '' ,'email' => '' ,];
+        return view('usuarios/index', compact('users'));
+
     }
 
     /**
@@ -51,13 +68,26 @@ class UsuariosController extends Controller
     public function store(Request $request)
     {
         $userId = $request->user_id;
-        $user   =   Usuarios::updateOrCreate(['id' => $userId],
-                        [
-                            'username' => $request->username,
-                            'email' => $request->email
-                        ]
-                    );
-        return Response::json($user);
+        if ($userId) {
+            $user   =   User::updateOrCreate(['id' => $userId],
+                            [
+                                'username' => $request->username,
+                                'email' => $request->email,
+                            ]
+                        );
+        } else {
+
+            $user   =   User::updateOrCreate(['id' => $userId],
+                            [
+                                'username' => $request->username,
+                                'email' => $request->email,
+                                'password' => $request->password
+                            ]
+                        );
+        }
+
+        return response()->json(['success'=>'Usuario saved successfully.']);
+
     }
 
     /**
@@ -79,10 +109,8 @@ class UsuariosController extends Controller
      */
     public function edit($id)
     {
-        $where = array('id' => $id);
-        $user  = Usuarios::where($where)->first();
-
-        return Response::json($user);
+        $usuario = User::find($id);
+        return response()->json($usuario);
     }
 
     /**
@@ -105,7 +133,7 @@ class UsuariosController extends Controller
      */
     public function destroy($id)
     {
-        $user = Usuarios::where('id',$id)->delete();
-        return Response::json($user);
+        User::find($id)->delete();
+        return response()->json(['success'=>'eliminado deleted successfully.']);
     }
 }

@@ -1,178 +1,158 @@
 @extends('layouts.app')
 
 @section('content')
+<html>
+<head>
+    <title>Laravel 6 Ajax CRUD tutorial using Datatable - ItSolutionStuff.com</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" />
+    <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+</head>
+<body>
+
 <div class="container">
-   <div class="row">
-      <div class="col-12">
-         <a href="javascript:void(0)" class="btn btn-success mb-2" id="create-new-user">Add User</a>
-         <!--Inicio construcción de la tabla-->
-         <table id="example" class="table table-striped table-bordered" style="width:100%">
-            <thead>
-               <tr>
-                  <th>Nombre Usuario</th>
-                  <th>Email</th>
-                  <th>Fecha Creación</th>
-                  <th>Fecha Ultima modificación</th>
-                  <th>Acciones</th>
-               </tr>
-            </thead>
-            <tbody id="users-crud">
-               @forelse($datos['usuarios'] as $usuario)
-
-               <tr id="user_id_{{ $usuario['id'] }}">
-                  <td>{{$usuario['username']}}</td>
-                  <td>{{$usuario['email']}}</td>
-                  <td>{{$usuario['created_at']}}</td>
-                  <td>{{$usuario['updated_at']}}</td>
-                  <td>
-                    <button id="{{ $usuario['id'] }}" onclick="editClick(this)">Edit</button>
-                    <button id="{{ $usuario['id'] }}" onclick="deleteClick(this)">Eliminar</button>
-                </td>
-               </tr>
-               @empty
-               <p>No se encuentran resultados</p>
-               @endforelse
-            </tbody>
-            <tfoot>
-               <tr>
-                  <th>Nombre Usuario</th>
-                  <th>Email</th>
-                  <th>Fecha Creación</th>
-                  <th>Fecha Ultima modificación</th>
-                  <th>Acciones</th>
-               </tr>
-            </tfoot>
-         </table>
-         </table>
-         {{ $datos['usuarios']->links() }}
-      </div>
-   </div>
+    <h1>Laravel 6 Ajax CRUD tutorial using Datatable - ItSolutionStuff.com</h1>
+    <a class="btn btn-success" href="javascript:void(0)" id="createNewProduct"> Create New Product</a>
+    <table class="table table-bordered data-table">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th width="280px">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 </div>
-<!--Ventana Modal-->
-<div class="modal fade" id="ajax-crud-modal" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h4 class="modal-title" id="userCrudModal"></h4>
-        </div>
-        <div class="modal-body">
-            <form id="userForm" name="userForm" class="form-horizontal">
-               <input type="hidden" name="user_id" id="user_id">
-                <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Username</label>
-                    <div class="col-sm-12">
-                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter UserName" value="" maxlength="50" required="">
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Email</label>
-                    <div class="col-sm-12">
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" value="" required="">
+<div class="modal fade" id="ajaxModel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modelHeading"></h4>
+            </div>
+            <div class="modal-body">
+                <form id="productForm" name="productForm" class="form-horizontal">
+                   <input type="hidden" name="user_id" id="user_id">
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label">username</label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" value="" maxlength="50" required="">
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="btn-save" value="create">Guardar Cambios</button>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Email</label>
+                        <div class="col-sm-12">
+                            <textarea id="email" name="email" required="" placeholder="Enter Details" class="form-control"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-offset-2 col-sm-10">
+                     <button type="submit" class="btn btn-primary" id="saveBtn" value="create">Save changes
+                     </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-  </div>
 </div>
+
+</body>
+
 <script type="text/javascript">
-   $(document).ready(function() {
-        //tabla
-        $('#example').DataTable().data().each(function (d){ console.log(d) });;
-        //crud ajas se carga el token de seguridad que se debe enviar
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        /*  Cuando usuario le de click al btn nuevo usuario */
-        $('#create-new-user').click(function () {
-            $('#btn-save').val("create-user");
-            $('#userForm').trigger("reset");
-            $('#userCrudModal').html("Add New User");
-            $('#ajax-crud-modal').modal('show');
-        });
+  $(function(){
 
- if ($("#userForm").length > 0) {
+      $.ajaxSetup({
+          headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          }
+    });
 
-      $("#userForm").validate({
+    var table = $('.data-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{ route('usuarios.index') }}",
+        columns: [
+            {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+            {data: 'username', name: 'username'},
+            {data: 'email', name: 'email'},
+            {data: 'action', name: 'action', orderable: false, searchable: false},
+        ]
+    });
 
-     submitHandler: function(form) {
+    $('#createNewProduct').click(function () {
+        $('#saveBtn').val("create-product");
+        $('#user_id').val('');
+        $('#productForm').trigger("reset");
+        $('#modelHeading').html("Crear Nuevo Usuario");
+        $('#ajaxModel').modal('show');
+    });
 
+    $('body').on('click', '.editUsuario', function () {
+      var user_id = $(this).data('id');
+      $.get("{{ route('usuarios.index') }}" +'/' + user_id +'/edit', function (data) {
+          $('#modelHeading').html("Edit Product");
+          $('#saveBtn').val("edit-user");
+          $('#ajaxModel').modal('show');
+          $('#user_id').val(data.id);
+          $('#username').val(data.username);
+          $('#email').val(data.email);
+      })
+   });
 
-      var actionType = $('#btn-save').val();
-      $('#btn-save').html('Sending..');
+    $('#saveBtn').click(function (e) {
+        e.preventDefault();
+        $(this).html('Sending..');
 
-      $.ajax({
-          data: $('#userForm').serialize(),
-          url: "https://www.tutsmake.com/laravel-example/ajax-crud/store",
+        $.ajax({
+          data: $('#productForm').serialize(),
+          url: "{{ route('usuarios.store') }}",
           type: "POST",
           dataType: 'json',
           success: function (data) {
-              var user = '<tr id="user_id_' + data.id + '"><td>' + data.id + '</td><td>' + data.name + '</td><td>' + data.email + '</td>';
-              user += '<td><a href="javascript:void(0)" id="edit-user" data-id="' + data.id + '" class="btn btn-info">Edit</a></td>';
-              user += '<td><a href="javascript:void(0)" id="delete-user" data-id="' + data.id + '" class="btn btn-danger delete-user">Delete</a></td></tr>';
 
-
-              if (actionType == "create-user") {
-                  $('#users-crud').prepend(user);
-              } else {
-                  $("#user_id_" + data.id).replaceWith(user);
-              }
-
-              $('#userForm').trigger("reset");
-              $('#ajax-crud-modal').modal('hide');
-              $('#btn-save').html('Save Changes');
+              $('#productForm').trigger("reset");
+              $('#ajaxModel').modal('hide');
+              table.draw();
 
           },
           error: function (data) {
               console.log('Error:', data);
-              $('#btn-save').html('Save Changes');
+              $('#saveBtn').html('Save Changes');
           }
       });
-    }
-  })
-}
+    });
 
-   });
+    $('body').on('click', '.deleteUser', function () {
 
-    function editClick (obj) {
-          var idUsuario = $(obj).attr('id');
-          var employeeID = $(obj).closest('tr').find('td:first').html();
-          $.get('usuarios/' + idUsuario +'/edit', function (data) {
-             $('#userCrudModal').html("Edit User");
-              $('#btn-save').val("edit-user");
-              $('#ajax-crud-modal').modal('show');
-              $('#user_id').val(data.id);
-              $('#username').val(data.username);
-              $('#email').val(data.email);
-          })
+        var product_id = $(this).data("id");
+        confirm("Are You sure want to delete !");
 
-    }
+        $.ajax({
+            type: "DELETE",
+            url: "{{ route('usuarios.store') }}"+'/'+product_id,
+            success: function (data) {
+                table.draw();
+            },
+            error: function (data) {
+                console.log('Error:', data);
+            }
+        });
+    });
 
-    function deleteClick (obj) {
-          if( confirm(" Eliminar el registro Confirme !") == true ){
-            var idUsuario = $(obj).attr('id');
-            var employeeID = $(obj).closest('tr').find('td:first').html();
-                $.ajax({
-                    type: "DELETE",
-                    url: "{{ url('usuarios')}}"+'/'+idUsuario,
-                    success: function (data) {
-                        $("#user_id_" + idUsuario).remove();
-                    },
-                    error: function (data) {
-                        console.log('Error:', data);
-                    }
-                });
-            return true;
-          } else{
-            return false;
-          }
-    }
+  });
+
+
 
 </script>
+</html>
 @endsection
